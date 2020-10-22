@@ -1,0 +1,74 @@
+package tn.enig.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import tn.enig.dao.IMagasinDao;
+import tn.enig.dao.IProduitDao;
+import tn.enig.model.Magasin;
+import tn.enig.model.Produit;
+
+@Controller
+public class AppTest {
+	@Autowired
+	IProduitDao daop;
+	@Autowired
+	IMagasinDao daom;
+	
+	public void setDaop(IProduitDao daop) {
+		this.daop = daop;
+	}
+	
+	public void setDaom(IMagasinDao daom) {
+		this.daom = daom;
+	}
+	
+	
+	@GetMapping("/home")
+	public String get1(Model m) {
+		List<Magasin> liste1=daom.findAll();
+		m.addAttribute("liste", liste1);
+		return "listemag";
+	}
+	
+	@GetMapping("/magasin/{id}")
+	public String get2(Model m, @PathVariable("id") int id) {
+		List<Produit> liste=daop.getAllProduitsByCat(id);
+		m.addAttribute("liste", liste);
+		return "produits";
+	}
+	
+	@GetMapping("/ajoutProduit")
+	public String get3(Model m) {
+		Produit p = new Produit();
+		List<Magasin> listemag=daom.findAll();
+		m.addAttribute("p", p);
+		m.addAttribute("listem", listemag);
+		
+		return "ajoutp";
+	}
+	
+	
+	@PostMapping("/saveProduit")
+	public String get4(Model m,@ModelAttribute("p") Produit p) {
+		daop.save(p);
+		return "redirect:/home";
+	}
+	
+	@GetMapping("/deletep/{id}")
+	public String get5(Model m, @PathVariable("id") int id) {
+		daop.delete(id);
+		return "redirect:/home";
+	}
+	
+	
+	
+	
+}
